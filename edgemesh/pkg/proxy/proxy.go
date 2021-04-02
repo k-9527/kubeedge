@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -32,6 +33,8 @@ const (
 var (
 	proxier *Proxier
 	route   netlink.Route
+	// parse nameserver ip
+	parser = regexp.MustCompile(`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`)
 )
 
 func Init() {
@@ -178,9 +181,10 @@ func ensureResolvForHost() {
 		klog.Errorf("[EdgeMesh] read file %s err: %v", hostResolv, err)
 		return
 	}
+	ip := config.Config.ListenIP.String()
 	// if resolv.conf is empty, then append nameserver directly and return
 	if string(bs) == "" {
-		nameserver := "nameserver " + config.Config.ListenIP.String()
+		nameserver := "nameserver " + ip
 		if err := ioutil.WriteFile(hostResolv, []byte(nameserver), 0600); err != nil {
 			klog.Errorf("[EdgeMesh] write file %s err: %v", hostResolv, err)
 		}
@@ -192,7 +196,7 @@ func ensureResolvForHost() {
 	startIdx := 0
 	resolv := strings.Split(string(bs), "\n")
 	for idx, item := range resolv {
-		if strings.Contains(item, config.Config.ListenIP.String()) {
+		if strings.Contains(item, ip) && parser.FindString(item) == ip {
 			configured = true
 			dnsIdx = idx
 			break
