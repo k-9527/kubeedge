@@ -178,9 +178,8 @@ func ensureResolvForHost() {
 		klog.Errorf("[EdgeMesh] read file %s err: %v", hostResolv, err)
 		return
 	}
-
-	resolv := strings.Split(string(bs), "\n")
-	if resolv == nil {
+	// if resolv.conf is empty, then append nameserver directly and return
+	if string(bs) == "" {
 		nameserver := "nameserver " + config.Config.ListenIP.String()
 		if err := ioutil.WriteFile(hostResolv, []byte(nameserver), 0600); err != nil {
 			klog.Errorf("[EdgeMesh] write file %s err: %v", hostResolv, err)
@@ -191,6 +190,7 @@ func ensureResolvForHost() {
 	configured := false
 	dnsIdx := 0
 	startIdx := 0
+	resolv := strings.Split(string(bs), "\n")
 	for idx, item := range resolv {
 		if strings.Contains(item, config.Config.ListenIP.String()) {
 			configured = true
@@ -226,6 +226,8 @@ func ensureResolvForHost() {
 		idx++
 	}
 
+	// trim last '\n', it will append many space lines to resolv.conf file
+	nameserver = strings.TrimRight(nameserver, "\n")
 	if err := ioutil.WriteFile(hostResolv, []byte(nameserver), 0600); err != nil {
 		klog.Errorf("[EdgeMesh] failed to write file %s, err: %v", hostResolv, err)
 		return
@@ -246,8 +248,8 @@ func sortNameserver(resolv []string, dnsIdx, startIdx int) string {
 		}
 		nameserver = nameserver + resolv[idx] + "\n"
 	}
-
-	return nameserver
+	// trim last '\n'
+	return strings.TrimRight(nameserver, "\n")
 }
 
 func Clean() {
