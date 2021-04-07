@@ -147,12 +147,14 @@ func Start() {
 			klog.Warningf("[EdgeMesh] get tcp conn error: %v", err)
 			continue
 		}
+		klog.Infof("conn info:localaddr->%s,remoteadd->%s", conn.LocalAddr(), conn.RemoteAddr())
 		ip, port, err := realServerAddress(&conn)
 		if err != nil {
 			klog.Warningf("[EdgeMesh] get real destination of tcp conn error: %v", err)
 			conn.Close()
 			continue
 		}
+		klog.Infof("real ip:%s,real port:%s",ip,port)
 		proto, err := newProtocolFromSock(ip, port, conn)
 		if err != nil {
 			klog.Warningf("[EdgeMesh] get protocol from sock err: %v", err)
@@ -246,7 +248,7 @@ func realServerAddress(conn *net.Conn) (string, int, error) {
 	if err != nil {
 		return "", -1, err
 	}
-
+klog.Infof("[listener] real server info:%v",addr)
 	var ip net.IP
 	switch addr.family {
 	case syscall.AF_INET:
