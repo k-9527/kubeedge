@@ -154,7 +154,7 @@ func Start() {
 			conn.Close()
 			continue
 		}
-		klog.Infof("real ip:%s,real port:%s",ip,port)
+		klog.Infof("real ip:%s,real port:%s", ip, port)
 		proto, err := newProtocolFromSock(ip, port, conn)
 		if err != nil {
 			klog.Warningf("[EdgeMesh] get protocol from sock err: %v", err)
@@ -173,7 +173,7 @@ func newProtocolFromSock(ip string, port int, conn net.Conn) (proto protocol.Pro
 	if protoName == "" || svcName == "" {
 		return nil, fmt.Errorf("protocol name: %s or svcName: %s is invalid", protoName, svcName)
 	}
-
+	klog.Infof("[listener] newProtocolFromSock:svcPorts->%s,protoName->%s,svcName->%s", svcPorts, protoName, svcName)
 	svcNameSets := strings.Split(svcName, ".")
 	if len(svcNameSets) != 2 {
 		return nil, fmt.Errorf("invalid length %d after splitting svc name %s", len(svcNameSets), svcName)
@@ -194,6 +194,7 @@ func newProtocolFromSock(ip string, port int, conn net.Conn) (proto protocol.Pro
 		proto = nil
 		err = fmt.Errorf("protocol: %s is not supported yet", protoName)
 	}
+	klog.Infof("[listener] protocol is:%v", proto)
 	return
 }
 
@@ -248,7 +249,7 @@ func realServerAddress(conn *net.Conn) (string, int, error) {
 	if err != nil {
 		return "", -1, err
 	}
-klog.Infof("[listener] real server info:%v",addr)
+	klog.Infof("[listener] real server info:%v", addr)
 	var ip net.IP
 	switch addr.family {
 	case syscall.AF_INET:
@@ -534,4 +535,10 @@ func (sd *SvcDescription) getSvcPorts(ip string) string {
 func GetServiceServer(svcName string) string {
 	ip := svcDesc.getIP(svcName)
 	return ip
+}
+func debug() {
+	klog.Info("[listener] debug svcbyip")
+	for ip, svc := range svcDesc.SvcPortsByIP {
+		klog.Infof("ip:%s,svc:%s", ip, svc)
+	}
 }

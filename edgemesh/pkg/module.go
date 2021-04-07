@@ -71,3 +71,6 @@ func (em *EdgeMesh) Start() {
 		listener.MsgProcess(msg)
 	}
 }
+func debug(){
+	listener.SvcDescription{}
+}
