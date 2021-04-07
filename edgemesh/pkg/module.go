@@ -53,6 +53,7 @@ func (em *EdgeMesh) Start() {
 	go listener.Start()
 	// start dns server
 	go dns.Start()
+	debug()
 	// we need watch message to update the cache of instances
 	for {
 		select {
@@ -72,5 +73,5 @@ func (em *EdgeMesh) Start() {
 	}
 }
 func debug(){
-	listener.SvcDescription{}
+	listener.Debug()
 }

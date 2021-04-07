@@ -536,7 +536,7 @@ func GetServiceServer(svcName string) string {
 	ip := svcDesc.getIP(svcName)
 	return ip
 }
-func debug() {
+func Debug() {
 	klog.Info("[listener] debug svcbyip")
 	for ip, svc := range svcDesc.SvcPortsByIP {
 		klog.Infof("ip:%s,svc:%s", ip, svc)
