@@ -48,7 +48,8 @@ func (p *HTTP) Process() {
 
 		// create invocation
 		inv := invocation.New(context.Background())
-
+		klog.Infof("http request port:%s", req.Host)
+		klog.Infof("http request is:%v", req)
 		// set invocation
 		inv.MicroServiceName = req.Host
 		inv.SourceServiceID = ""

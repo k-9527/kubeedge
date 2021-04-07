@@ -142,6 +142,7 @@ func recoverFromDB() {
 // Start starts the EdgeMesh listener
 func Start() {
 	for {
+		Debug()
 		conn, err := config.Config.Listener.Accept()
 		if err != nil {
 			klog.Warningf("[EdgeMesh] get tcp conn error: %v", err)
@@ -539,6 +540,6 @@ func GetServiceServer(svcName string) string {
 func Debug() {
 	klog.Info("[listener] debug svcbyip")
 	for ip, svc := range svcDesc.SvcPortsByIP {
-		klog.Infof("ip:%s,svc:%s", ip, svc)
+		klog.Infof("[debug] ip:%s,svc:%s", ip, svc)
 	}
 }
